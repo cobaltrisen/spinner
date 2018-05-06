@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="main.css" rel="stylesheet" type="text/css">
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js" integrity="sha256-Thm9kMI2BQKxVnCWipQIGeb8QVl2lohO+WWWfCiF8b0=" crossorigin="anonymous"></script>        
+        
+    </head>
+    <body>
+        
+        <div class="gameui">
+            <div class="top left">
+                <span id="leaderboard"></span>
+            </div>
+            <div class="bottom left">
+                <span id="tps"></span>
+            </div>
+        </div>
+        <div class="modal">
+                <div class="modal-content">
+                    <h1>Spinner</h1>
+                    <input type="text" id="name" maxlength="16" autofocus><button onclick="enterGame()">Start</button>
+                </div>
+            </div>
+        <canvas id="canv"></canvas>
+        <script src="main.js"></script>
+    </body>
+</html>
