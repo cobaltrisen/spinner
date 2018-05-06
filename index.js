@@ -215,7 +215,7 @@ function tick(){
 }
 
 // start server
-server.listen(2000, function(){
+server.listen(process.argv[2], function(){
     console.log('Started server');
     setInterval(tick, 1000/60);
 });
