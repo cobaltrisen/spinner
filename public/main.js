@@ -55,8 +55,10 @@ socket.on('package', function(p){
 
 function tick(){
     
-    if(package && package.clients[package.local]){
-        socket.emit('keys', keys);
+    if(package){
+        if(package.clients[package.local]){
+            socket.emit('keys', keys);
+        }
 
 
         let ids = [];
