@@ -238,14 +238,20 @@ render();
 function enterGame(){
     let name = document.getElementById('name').value;
     if(name.length > 0){
+        keys = {};
         socket.emit('enter-game', {name: name});
         $('.gameui').fadeIn();
         $('.modal').fadeOut();
+        $('#name')[0].disabled = true;
     }
 }
 
 socket.on('death', function(){
     $('.modal').fadeIn();
     $('.gameui').fadeOut();
-    $('#name').focus();
+    window.setTimeout(function(){
+        $('#name')[0].disabled = false;
+        $('#name').focus();
+    }, 500);
+   
 });
