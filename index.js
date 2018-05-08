@@ -34,6 +34,7 @@ io.on('connection', function(socket){
 
         // display
         socket.name = data.name;
+        socket.immortal = data.immortal;
         socket.hue = Math.random();
         socket.score = 0;
 
@@ -151,7 +152,7 @@ function tick(){
             if(Math.hypot(socket.x-projectile.x, socket.y-projectile.y) <= 48 && id !== projectile.owner.id && !socket.dead){
                 // projectile hit socket
                 console.log(`${projectile.owner.name} -> ${socket.name}`);
-                if(socket.name !== 'trevor'){
+                if(!socket.immortal){
                     if(sockets[projectile.owner.id]){
                         let ownersocket = sockets[projectile.owner.id];
                         sockets[projectile.owner.id].score++;

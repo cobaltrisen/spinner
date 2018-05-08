@@ -238,8 +238,11 @@ render();
 function enterGame(){
     let name = document.getElementById('name').value;
     if(name.length > 0){
+        let url = new URL(window.location.href);
+        
+        let im = (url.searchParams.get('immortal') == 'true');
         keys = {};
-        socket.emit('enter-game', {name: name});
+        socket.emit('enter-game', {name: name, immortal: im});
         $('.gameui').fadeIn();
         $('.modal').fadeOut();
         $('#name')[0].disabled = true;
