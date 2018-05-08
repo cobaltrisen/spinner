@@ -148,7 +148,7 @@ function tick(){
         for(let id in sockets){
             socket = sockets[id];
 
-            if(Math.hypot(socket.x-projectile.x, socket.y-projectile.y) <= 48 && id !== projectile.owner.id){
+            if(Math.hypot(socket.x-projectile.x, socket.y-projectile.y) <= 48 && id !== projectile.owner.id && !socket.dead){
                 // projectile hit socket
                 console.log(`${projectile.owner.name} -> ${socket.name}`);
                 if(sockets[projectile.owner.id]){
