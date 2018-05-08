@@ -71,8 +71,8 @@ function tick(){
                 let playersnapshot = Object.assign(players[id], {});
                 players[id] = package.clients[id];
 
-                players[id].x = lerp(playersnapshot.x, package.clients[id].x, 1);
-                players[id].y = lerp(playersnapshot.y, package.clients[id].y, 1);
+                players[id].x = lerp(playersnapshot.x, package.clients[id].x, 0.25);
+                players[id].y = lerp(playersnapshot.y, package.clients[id].y, 0.25);
                 // console.log('updated player');
             }
         }
@@ -92,7 +92,7 @@ function lerp(a,b,t){
     return a + (b-a) * t;
 }
 function render(){
-    // window.requestAnimationFrame(render);
+    
     
     
 
@@ -122,7 +122,10 @@ function render(){
         if(keys[77]){
         drawMap();
         }
+
+        
     }
+    requestAnimationFrame(render);
 }
 
 function drawGrid(){
@@ -228,8 +231,8 @@ function drawPlayer(x, y, dx, dy, name, projectile, hue){
 
 window.setInterval(function(){
     tick();
-    render();
 }, 1000/60);
+render();
 function enterGame(){
     let name = document.getElementById('name').value;
     if(name.length > 0){
