@@ -251,7 +251,6 @@ socket.on('death', function(){
     $('.gameui').fadeOut();
     window.setTimeout(function(){
         $('#name')[0].disabled = false;
-        $('#name').focus();
     }, 500);
    
 });

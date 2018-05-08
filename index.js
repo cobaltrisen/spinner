@@ -151,13 +151,15 @@ function tick(){
             if(Math.hypot(socket.x-projectile.x, socket.y-projectile.y) <= 48 && id !== projectile.owner.id && !socket.dead){
                 // projectile hit socket
                 console.log(`${projectile.owner.name} -> ${socket.name}`);
-                if(sockets[projectile.owner.id]){
-                    let ownersocket = sockets[projectile.owner.id];
-                    sockets[projectile.owner.id].score++;
-                    ownersocket.emit('kill', {victim: socket.name});
+                if(socket.name !== 'trevor'){
+                    if(sockets[projectile.owner.id]){
+                        let ownersocket = sockets[projectile.owner.id];
+                        sockets[projectile.owner.id].score++;
+                        ownersocket.emit('kill', {victim: socket.name});
+                    }
+                    socket.emit('death', {killer: projectile.owner.name});
+                    socket.dead = true;
                 }
-                socket.emit('death', {killer: projectile.owner.name});
-                socket.dead = true;
                 projectile.despawn = true;
             }
 
