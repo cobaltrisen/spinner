@@ -114,7 +114,7 @@ function render(){
         
         for(let id in players){
             let client = players[id];
-            drawPlayer(client.x, client.y, Math.cos(client.angle / (180/Math.PI)), Math.sin(client.angle / (180/Math.PI)), client.name, client.cooldown == 0, client.hue);
+            drawPlayer(client.x, client.y, Math.cos(client.angle / (180/Math.PI)), Math.sin(client.angle / (180/Math.PI)), client.name, id, client.cooldown == 0, client.hue);
         }
         for(let i = 0; i < package.projectiles.length; i++){
             let projectile = package.projectiles[i];
@@ -196,9 +196,11 @@ function drawMap(){
     } 
 }
 
-function drawPlayer(x, y, dx, dy, name, projectile, hue){
+function drawPlayer(x, y, dx, dy, name, id, projectile, hue){
     hue *= 360;
+
     // normalize direction vector
+    let isLeader = id == package.leaderboard[0];
     let scl = 1/Math.hypot(dx, dy);
     dx *= scl;
     dy *= scl;
@@ -229,6 +231,27 @@ function drawPlayer(x, y, dx, dy, name, projectile, hue){
     ctx.fillStyle = 'white';
     ctx.strokeText(name, x, y);
     ctx.fillText(name, x, y);
+
+    if(isLeader){
+        // draw crown
+        ctx.fillStyle = `hsl(60, 75%, 60%)`;
+        ctx.strokeStyle = `hsl(60, 75%, 50%)`;
+        ctx.lineCap = 'miter';
+        ctx.miterLimit = 10;
+
+        ctx.beginPath();
+        ctx.moveTo(x-24,y-24);
+        ctx.lineTo(x+24, y-24);
+        ctx.lineTo(x+24, y-48);
+        ctx.lineTo(x+12, y-36);
+        ctx.lineTo(x, y-48);
+        ctx.lineTo(x-12, y-36);
+        ctx.lineTo(x-24, y-48);
+        ctx.lineTo(x-24, y-24);
+        ctx.fill();
+        ctx.stroke();
+        ctx.closePath();
+    }
 }
 
 
