@@ -260,6 +260,7 @@ window.setInterval(function(){
 render();
 function enterGame(){
     let name = document.getElementById('name').value;
+    name = name.replace(/\W/g, '');
     if(name.length > 0){
         keys = {};
         socket.emit('enter-game', {name: name});
