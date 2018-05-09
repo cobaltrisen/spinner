@@ -10,7 +10,6 @@ let package = null;
 let players = {};
 let cx = null;
 let cy = null;
-let immortal = false;
 
 $('#name').keyup(function(e){
     if(e.keyCode === 13){
@@ -263,7 +262,7 @@ function enterGame(){
     let name = document.getElementById('name').value;
     if(name.length > 0){
         keys = {};
-        socket.emit('enter-game', {name: name, immortal: immortal});
+        socket.emit('enter-game', {name: name});
         $('.gameui').fadeIn();
         $('.modal').fadeOut();
         $('#name')[0].disabled = true;

@@ -34,7 +34,7 @@ io.on('connection', function(socket){
 
         // display
         socket.name = data.name;
-        socket.immortal = data.immortal;
+        socket.immortal = false;
         socket.hue = Math.random();
         socket.score = 0;
 
@@ -213,7 +213,7 @@ function tick(){
     }
     for(let id in sockets){
         package.local = id;
-        sockets[id].emit('package', package);
+        sockets[id].volatile.emit('package', package);
     }
 }
 
