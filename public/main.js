@@ -11,20 +11,18 @@ let players = {};
 let cx = null;
 let cy = null;
 
-$('#name').keyup(function(e){
-    if(e.keyCode === 13){
-        enterGame();
-    }
-});
 
 
 window.onkeydown = function(e){
     keys[e.keyCode] = true;
 };
 window.onkeyup = function(e){
-    if(e.keyCode === 27){
+    if(e.keyCode === 27 && playing){
         e.preventDefault();
         socket.emit('suicide');
+    }
+    if(e.keyCode === 13 && !playing){
+        enterGame();
     }
     delete keys[e.keyCode];
 }
@@ -110,7 +108,7 @@ function render(){
         ctx.save();
         ctx.translate(window.innerWidth/2-cx, window.innerHeight/2-cy);
         drawGrid();
-        
+        // drawPowerup(0,0);
         for(let id in players){
             let client = players[id];
             drawPlayer(client.x, client.y, Math.cos(client.angle / (180/Math.PI)), Math.sin(client.angle / (180/Math.PI)), client.name, id, client.cooldown == 0, client.hue);
@@ -119,7 +117,7 @@ function render(){
             let projectile = package.projectiles[i];
             drawProjectile(projectile.x, projectile.y, projectile.owner.hue);
         }
-       
+        
         ctx.restore();
         if(keys[77]){
         drawMap();
@@ -136,25 +134,23 @@ function drawGrid(){
     ctx.lineWidth = 4;
     ctx.lineCap = 'square';
     ctx.beginPath();
-    for(let i = 0; i <= 32; i++){
-        ctx.moveTo(-1024, i*64-1024);
-        ctx.lineTo(1024, i*64-1024);
+    for(let i = 0; i <= 64; i++){
+        ctx.moveTo(-2048, i*64-2048);
+        ctx.lineTo(2048, i*64-2048);
     }
-    for(let j = 0; j <= 32; j++){
-        ctx.moveTo(j*64-1024, -1024);
-        ctx.lineTo(j*64-1024, 1024);
+    for(let j = 0; j <= 64; j++){
+        ctx.moveTo(j*64-2048, -2048);
+        ctx.lineTo(j*64-2048, 2048);
     }
     ctx.stroke();
     ctx.closePath();
 }
 
 function drawProjectile(x, y, hue){
-    hue *= 360;
 
     ctx.lineWidth = 4;
     ctx.beginPath();
-    ctx.fillStyle = `hsl(${hue}, 75%, 60%)`;
-    ctx.strokeStyle = `hsl(${hue}, 75%, 50%)`;
+    setColors(hue);
     ctx.moveTo(x+16, y);
     ctx.arc(x, y, 16, 0, 360);
     ctx.fill();
@@ -164,51 +160,69 @@ function drawProjectile(x, y, hue){
 
 function drawMap(){
     let mapSize = 256;
-    let worldSize = 2048;
+    let worldSize = 4096;
     let mapLeft = window.innerWidth - mapSize;
     let mapTop = window.innerHeight - mapSize;
-    ctx.fillStyle = '#eeeeee';
+    ctx.fillStyle = '#f8f8f8';
     ctx.fillRect(mapLeft, mapTop, mapSize, mapSize);
     for(let id in players){
         let client = players[id];
-        let mapX = (mapSize/worldSize)*(client.x + 1024);
-        let mapY = (mapSize/worldSize)*(client.y + 1024);
+        let mapX = (mapSize/worldSize)*(client.x + 2048);
+        let mapY = (mapSize/worldSize)*(client.y + 2048);
         if(mapX >= 0 && mapX < mapSize && mapY >= 0 && mapY < mapSize){
             ctx.beginPath()
-            ctx.fillStyle = `hsl(${client.hue * 360}, 75%, 60%)`;
+            setColors(client.hue);
+            // ctx.strokeStyle = 'black';
             ctx.arc(mapLeft + mapX, mapTop + mapY, 2, 0, 360);
             ctx.fill();
+            // ctx.stroke();
             ctx.closePath();
         }
     }   
     for(let i = 0; i < package.projectiles.length; i++){
         let projectile = package.projectiles[i];
-        let mapX = (mapSize/worldSize)*(projectile.x + 1024);
-        let mapY = (mapSize/worldSize)*(projectile.y + 1024);
+        let mapX = (mapSize/worldSize)*(projectile.x + 2048);
+        let mapY = (mapSize/worldSize)*(projectile.y + 2048);
         if(mapX >= 0 && mapX < mapSize && mapY >= 0 && mapY < mapSize){
             ctx.beginPath()
-            ctx.fillStyle = `hsl(${projectile.owner.hue * 360}, 75%, 60%)`;
+            setColors(projectile.owner.hue);
+            // ctx.strokeStyle = 'black';
             ctx.arc(mapLeft + mapX, mapTop + mapY, 1, 0, 360);
             ctx.fill();
+            // ctx.stroke();
             ctx.closePath();
         }
     } 
 }
 
-function drawPlayer(x, y, dx, dy, name, id, projectile, hue){
+function setColors(hue){
     hue *= 360;
+    ctx.fillStyle = `hsl(${hue}, 75%, 60%)`;
+    ctx.strokeStyle = `hsl(${hue}, 75%, 50%)`;
+}
+
+function drawPowerup(x, y){
+    ctx.fillStyle = `hsl(0, 0%, 60%)`;
+    ctx.strokeStyle = `hsl(0, 0%, 50%)`;
+
+    ctx.beginPath();
+    ctx.rect(x-16, y-16, 32, 32);
+    ctx.fill();
+    ctx.stroke();
+    ctx.closePath();
+}
+
+function drawPlayer(x, y, dx, dy, name, id, projectile, hue){
+    let isLeader = id == package.leaderboard[0];
 
     // normalize direction vector
-    let isLeader = id == package.leaderboard[0];
     let scl = 1/Math.hypot(dx, dy);
     dx *= scl;
     dy *= scl;
 
     ctx.lineWidth = 4;
     ctx.beginPath();
-    ctx.fillStyle = `hsl(${hue}, 75%, 60%)`;
-    ctx.strokeStyle = `hsl(${hue}, 75%, 50%)`;
-
+    setColors(hue);
     ctx.arc(x, y, 32, 0, 360);
     if(projectile){
         ctx.moveTo(x+dx*80+16, y+dy*80);
@@ -233,8 +247,7 @@ function drawPlayer(x, y, dx, dy, name, id, projectile, hue){
 
     if(isLeader){
         // draw crown
-        ctx.fillStyle = `hsl(60, 75%, 60%)`;
-        ctx.strokeStyle = `hsl(60, 75%, 50%)`;
+        setColors(0.16666);
         ctx.lineCap = 'miter';
         ctx.miterLimit = 10;
 
@@ -267,12 +280,14 @@ function enterGame(){
         $('.gameui').fadeIn();
         $('.modal').fadeOut();
         $('#name')[0].disabled = true;
+        playing = true;
     }
 }
 
 socket.on('death', function(){
     $('.modal').fadeIn();
     $('.gameui').fadeOut();
+    playing = false;
     window.setTimeout(function(){
         $('#name')[0].disabled = false;
     }, 500);

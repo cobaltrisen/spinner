@@ -25,8 +25,8 @@ io.on('connection', function(socket){
         socket.dead = false;
 
         // position
-        socket.x = Math.floor(Math.random()*2000)-1000;
-        socket.y = Math.floor(Math.random()*2000)-1000;
+        socket.x = Math.floor(Math.random()*4000)-2000;
+        socket.y = Math.floor(Math.random()*4000)-2000;
 
         // rotation
         socket.angle = 0;
@@ -99,11 +99,15 @@ function tick(){
             let scl = 5/dist;
             vx *= scl;
             vy *= scl;
-            if(Math.abs(socket.x + vx) <= 1024){
+            if(Math.abs(socket.x + vx) <= 2048 || socket.x > 2048){
                 sockets[id].x += vx;
+            } else {
+                vx = 0;
             }
-            if(Math.abs(socket.y + vy) <= 1024){
+            if(Math.abs(socket.y + vy) <= 2048 || socket.y > 2048){
                 sockets[id].y += vy;
+            } else {
+                vy = 0;
             }
         }
         
@@ -138,7 +142,7 @@ function tick(){
     for(let i = 0; i < projectiles.length; i++){
         let projectile = projectiles[i];
 
-        if(Math.hypot(projectiles[i].x, projectiles[i].y) > 4096){
+        if(Math.hypot(projectiles[i].x, projectiles[i].y) > 8192){
             projectiles[i].despawn = true;
             continue;
         }
