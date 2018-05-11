@@ -11,6 +11,9 @@ let players = {};
 let cx = null;
 let cy = null;
 
+let pimg = new Image();
+let ppat;
+pimg.src = '/skin/skin.png';
 
 
 window.onkeydown = function(e){
@@ -224,17 +227,18 @@ function drawPlayer(x, y, dx, dy, name, id, projectile, hue){
     ctx.beginPath();
     setColors(hue);
     ctx.arc(x, y, 32, 0, 360);
+    
     if(projectile){
         ctx.moveTo(x+dx*80+16, y+dy*80);
         ctx.arc(x+dx*80, y+dy*80, 16, 0, 360);
     }
     ctx.fill();
-
     ctx.moveTo(x+dx*32, y+dy*32);
     ctx.lineTo(x+dx*64, y+dy*64);
     ctx.stroke();
     ctx.closePath();
-
+    // draw skin?
+    // ctx.drawImage(pimg, x-32, y-32, 64, 64);
     // draw player name
     ctx.font = '18px Arial'
     ctx.miterLimit = 2;

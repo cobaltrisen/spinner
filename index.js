@@ -3,6 +3,13 @@ const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
+function generateColor(){
+    let col = Math.random();
+    while (Math.abs(col-0.1666)< 0.0833){
+        col = Math.random();
+    }
+    return col;
+}
 
 // routes
 app.get('/', function(req, res){
@@ -35,7 +42,7 @@ io.on('connection', function(socket){
         // display
         socket.name = data.name;
         socket.immortal = false;
-        socket.hue = Math.random();
+        socket.hue = generateColor();
         socket.score = 0;
 
         // projectiles
