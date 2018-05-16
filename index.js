@@ -37,7 +37,6 @@ io.on('connection', function(socket){
 
         // rotation
         socket.angle = 0;
-        socket.angularVelocity = 1;
 
         // display
         socket.name = data.name;
@@ -45,8 +44,13 @@ io.on('connection', function(socket){
         socket.hue = generateColor();
         socket.score = 0;
 
+        // attributes
+        socket.projectileRespawnTime = 2;
+        socket.movementSpeed = 5;
+        socket.angularVelocity = 1;
+        socket.lives = 1;
+
         // projectiles
-        socket.projectileRespawnTime = 2 * 60;
         socket.projectileCooldown = 0;
 
         socket.keys = {}
@@ -103,7 +107,7 @@ function tick(){
 
         let dist = Math.hypot(vx, vy);
         if(dist > 0){
-            let scl = 5/dist;
+            let scl = socket.movementSpeed/dist;
             vx *= scl;
             vy *= scl;
             if(Math.abs(socket.x + vx) <= 2048 || socket.x > 2048){
@@ -126,7 +130,7 @@ function tick(){
 
         // firing
         if(socket.keys[32] && socket.projectileCooldown == 0){
-            sockets[id].projectileCooldown = socket.projectileRespawnTime;
+            sockets[id].projectileCooldown = socket.projectileRespawnTime * 60;
             let a = socket.angle + 90;
             let v = 8.37 * socket.angularVelocity;
             a %= 360;
@@ -149,7 +153,7 @@ function tick(){
     for(let i = 0; i < projectiles.length; i++){
         let projectile = projectiles[i];
 
-        if(Math.hypot(projectiles[i].x, projectiles[i].y) > 8192){
+        if(projectiles[i].x < -2176 || projectiles[i].x >= 2176 || projectiles[i].y < -2176 || projectiles[i].y >= 2176 ){
             projectiles[i].despawn = true;
             continue;
         }
@@ -163,7 +167,8 @@ function tick(){
             if(Math.hypot(socket.x-projectile.x, socket.y-projectile.y) <= 48 && id !== projectile.owner.id && !socket.dead){
                 // projectile hit socket
                 console.log(`${projectile.owner.name} -> ${socket.name}`);
-                if(!socket.immortal){
+                sockets[id].lives--;
+                if(socket.lives <= 0){
                     if(sockets[projectile.owner.id]){
                         let ownersocket = sockets[projectile.owner.id];
                         sockets[projectile.owner.id].score++;
